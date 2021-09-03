@@ -24,7 +24,7 @@ public class GenerateMap : MonoBehaviour
     }
     private void SpawnPrefab()
     {
-        int n = spawned + 3;
+        int n = spawned + 4;
         for (int i = spawned + 1; i <= n; i++)
         {
             SpawnedPrefabs.Add(Instantiate(Prefabs[Random.Range(0, Prefabs.Length - 1)], new Vector3(0, 0, (spawned) * 50), Quaternion.Euler(0, -90, 0)));
@@ -41,11 +41,11 @@ public class GenerateMap : MonoBehaviour
     }
     private void DeleteBehind()
     {
-        if(spawned >= 9)
+        if(spawned >= 10)
         {
             if (!startDeleted)
             {
-                if (player.transform.position.z >= SpawnedPrefabs[spawned - 9].transform.position.z)
+                if (player.transform.position.z >= SpawnedPrefabs[spawned - 10].transform.position.z)
                 {
                     foreach (GameObject o in Pocetni)
                     {
@@ -59,12 +59,12 @@ public class GenerateMap : MonoBehaviour
                 if (player.transform.position.z >= SpawnedPrefabs[0].transform.position.z)
                 {
                     //print(SpawnedPrefabs[spawned - 12].transform.position.z);
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         Destroy(SpawnedPrefabs[i]);
                         
                     }
-                    SpawnedPrefabs.RemoveRange(0, 3);
+                    SpawnedPrefabs.RemoveRange(0, 4);
                 }
             }
         }
