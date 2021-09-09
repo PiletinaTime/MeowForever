@@ -20,8 +20,7 @@ public class Collision : MonoBehaviour
         ableToCollide = false;
         for (int i = 0; i < numBlinks * 2; i++)
         {
-            rend.enabled = !rend.enabled;
-            rend1.enabled = !rend1.enabled;
+            rend.enabled = rend1.enabled = !rend.enabled;
             yield return new WaitForSeconds(seconds);
         }
         rend.enabled = rend1.enabled = ableToCollide = true;
@@ -48,13 +47,13 @@ public class Collision : MonoBehaviour
         }
         else if (other.CompareTag("Needles") && ableToCollide)
         {
-            Health.ChangeValue(-30);
+            Health.ChangeValue(-35);
             StartCoroutine(CharacterBlink(4, 0.2f));
             Handheld.Vibrate();
         }
         else if ((other.CompareTag("Blades") || other.CompareTag("Obstacle")) && ableToCollide)
         {
-            Health.ChangeValue(-20);
+            Health.ChangeValue(-25);
             StartCoroutine(CharacterBlink(4, 0.2f));
             Handheld.Vibrate();
         }
@@ -67,9 +66,8 @@ public class Collision : MonoBehaviour
             StopCoroutine(Health.reduceHP);
             finish = true;
             Movement.speed = 10;
-            StartCoroutine(Health.ReduceHealthGradually(4));
+            collectibleValue = 30;
+            StartCoroutine(Health.ReduceHealthGradually(6));
         }
     }
 }
-
-

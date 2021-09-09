@@ -1,72 +1,65 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GenerateMap : MonoBehaviour
 {
     [SerializeField]
-    private GameObject[] Prefabs;
-    private List<GameObject> SpawnedPrefabs = new List<GameObject>();
+    private TextMeshProUGUI Level;
     [SerializeField]
-    private Transform player;
-    [SerializeField]
-    private GameObject[] Pocetni;
-    private int spawned = 3;
-    private bool startDeleted = false;
-    void Start()
+    private GameObject[] MapPrefabs;
+    private float spawnPoint = 50f;
+    public static int level = 1;
+    private int levelLength;
+    private bool skirts;
+    private bool finish;
+    private void Awake()
     {
+        levelLength = level * 50 + 150;
+        Random.InitState(level);
+        Level.text = "Level " + level;
     }
-
     void Update()
     {
-        if (player.position.z >= (spawned - 2) * 50 - 50)
-            SpawnPrefab();
+        if(!finish)
+           SpawnPrefab();
     }
     private void SpawnPrefab()
     {
-        int n = spawned + 4;
-        for (int i = spawned + 1; i <= n; i++)
+        if (spawnPoint > levelLength)
+            SpawnFinish();
+        else
         {
-            SpawnedPrefabs.Add(Instantiate(Prefabs[Random.Range(0, Prefabs.Length - 1)], new Vector3(0, 0, (spawned) * 50), Quaternion.Euler(0, -90, 0)));
-            //Destroy(SpawnedPrefabs[i-2]);
-            
-            //print(SpawnedPrefabs[i].transform.position);
-            spawned++;
-        }
-        DeleteBehind();
-
-
-
-
-    }
-    private void DeleteBehind()
-    {
-        if(spawned >= 10)
-        {
-            if (!startDeleted)
+            int random = Random.Range(0, MapPrefabs.Length - 1);
+            if (skirts)
             {
-                if (player.transform.position.z >= SpawnedPrefabs[spawned - 10].transform.position.z)
-                {
-                    foreach (GameObject o in Pocetni)
-                    {
-                        Destroy(o);
-                        startDeleted = true;
-                    }
-                }
+                while (MapPrefabs[random].name.Contains("Skirts"))
+                    random = Random.Range(0, MapPrefabs.Length - 1);
+                SpawnNormal(random);
             }
             else
             {
-                if (player.transform.position.z >= SpawnedPrefabs[0].transform.position.z)
-                {
-                    //print(SpawnedPrefabs[spawned - 12].transform.position.z);
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Destroy(SpawnedPrefabs[i]);
-                        
-                    }
-                    SpawnedPrefabs.RemoveRange(0, 4);
-                }
+                if(MapPrefabs[random].name.Contains("Skirts"))
+                    SpawnSkirts(random);
+                else 
+                    SpawnNormal(random);
             }
         }
+    }
+    private void SpawnSkirts(int random)
+    {
+        Instantiate(MapPrefabs[random], new Vector3(0, 0, spawnPoint), Quaternion.identity);
+        spawnPoint += 25f;
+        skirts = true;
+    }
+    private void SpawnNormal(int random)
+    {
+        Instantiate(MapPrefabs[random], new Vector3(0, 0, spawnPoint), Quaternion.Euler(0, -90, 0));
+        spawnPoint += 50f;
+        skirts = false;
+    }
+    private void SpawnFinish()
+    {
+        Instantiate(MapPrefabs[MapPrefabs.Length - 1], new Vector3(0, 0, spawnPoint), Quaternion.identity);
+        finish = true;
     }
 }

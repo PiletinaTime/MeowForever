@@ -13,6 +13,7 @@ public class Movement : MonoBehaviour
     private Rigidbody rb;
     private Vector3 newPosition;
     private bool losingHP;
+    private float force = 15000f;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,14 +33,14 @@ public class Movement : MonoBehaviour
                 {
                     case TouchPhase.Moved:
                         Vector2 dragDistance = new Vector2(touch.deltaPosition.x / Screen.width, touch.deltaPosition.y / Screen.height);
-                        newPosition = speedModifier * Time.deltaTime * dragDistance * Vector3.right;
+                        newPosition = speedModifier * Time.fixedDeltaTime * dragDistance * Vector3.right;
                         break;
                     case TouchPhase.Stationary:
                     case TouchPhase.Ended:
                         newPosition.x = 0;
                         break;
                 }
-                rb.velocity = Vector3.ClampMagnitude(new Vector3(newPosition.x, rb.velocity.y, rb.velocity.z), 60f);
+                rb.velocity = new Vector3(newPosition.x, rb.velocity.y, rb.velocity.z);
                 MoveForward();
                 if (!losingHP)
                 {
@@ -55,7 +56,7 @@ public class Movement : MonoBehaviour
     private void MoveForward()
     {
         trail.transform.position = new Vector3(trail.transform.position.x, 0.5f, trail.transform.position.z);
-        rb.AddForce(Vector3.forward * 15000 * Time.deltaTime);
+        rb.AddForce(force * Time.fixedDeltaTime * Vector3.forward);
         if (rb.velocity.z > speed)
             rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, speed);
     }
@@ -63,7 +64,7 @@ public class Movement : MonoBehaviour
     {
         if (!Collision.finish)
         {
-            rb.velocity = Vector3.zero;
+            rb.velocity = new Vector3(0, rb.velocity.y, 0);
             rb.angularVelocity = Vector3.zero;
             StopCoroutine(Health.reduceHP);
             losingHP = false;
